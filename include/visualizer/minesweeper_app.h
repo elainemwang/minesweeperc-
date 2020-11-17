@@ -25,6 +25,7 @@ class MinesweeperApp : public ci::app::App {
   const double kYWindowSize = 500;
   const size_t kNumCols = 28;
   const size_t kNumRows = 20;
+
  private:
   Field field_;
   glm::vec2 mouse_pos_;

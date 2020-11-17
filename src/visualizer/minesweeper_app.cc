@@ -9,7 +9,7 @@ namespace minesweeper {
 namespace visualizer {
 
 MinesweeperApp::MinesweeperApp() : field_(glm::vec2(0,0), kNumRows, kNumCols,
-                                              kXWindowSize){
+                                              kXWindowSize, 80){ //TODO: make the num mines adjustable
   ci::app::setWindowSize((int)kXWindowSize, (int)kYWindowSize);
 }
 void MinesweeperApp::draw() {
@@ -41,9 +41,13 @@ void MinesweeperApp::keyDown(ci::app::KeyEvent event) {
           field_.FlagBox(field_pos.x, field_pos.y);
         }
       } else {
-        // TODO: If the box is open and
-        //      the number of flags around is equal to the value of the box,
-        //      open all the boxes around it.
+        // If the box is open and
+        // the number of flags around is equal to the value of the box,
+        // open all the boxes around it.
+        if(field_.FlagsAroundBox(field_pos.x, field_pos.y) ==
+            field_.GetBoard()[field_pos.x][field_pos.y].GetValue()){
+          field_.OpenBoxesAround(field_pos.x, field_pos.y);
+        }
       }
   }
 }

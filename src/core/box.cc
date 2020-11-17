@@ -14,6 +14,9 @@ Box::Box() {
 const size_t Box::GetValue() const {
   return value_;
 }
+void Box::SetValue(size_t value){
+  value_ = value;
+}
 const bool Box::IsFlagged() const {
   return flagged_;
 }
@@ -22,6 +25,9 @@ const bool Box::IsOpen() const {
 }
 const bool Box::IsMine() const {
   return mine_;
+}
+void Box::SetMine() {
+  mine_ = true;
 }
 void Box::Flag() {
   flagged_ = true;
@@ -32,6 +38,10 @@ void Box::Unflag() {
 
 const std::vector<std::vector<size_t>>& Box::GetBoxesAround() const{
   return boxes_around_;
+}
+
+void Box::AddBoxAround(size_t i, size_t j) {
+  boxes_around_.push_back(std::vector<size_t>{i,j});
 }
 
 bool Box::OpenAndCheckGameOver() {
