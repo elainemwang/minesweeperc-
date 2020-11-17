@@ -8,7 +8,7 @@ namespace minesweeper{
 Box::Box() {
   value_ = 0;
   flagged_ = false;
-  open_ = true;
+  open_ = false;
   mine_ = false;
 }
 const size_t Box::GetValue() const {
@@ -23,4 +23,25 @@ const bool Box::IsOpen() const {
 const bool Box::IsMine() const {
   return mine_;
 }
+void Box::Flag() {
+  flagged_ = true;
+}
+void Box::Unflag() {
+  flagged_ = false;
+}
+
+const std::vector<std::vector<size_t>>& Box::GetBoxesAround() const{
+  return boxes_around_;
+}
+
+bool Box::OpenAndCheckGameOver() {
+  if(!flagged_){
+    open_ = true;
+  }
+  if(open_ && mine_){
+    return true;
+  }
+  return false;
+}
+
 }

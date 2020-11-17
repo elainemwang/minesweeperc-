@@ -12,8 +12,10 @@ class Box {
   const size_t GetValue() const;
   const bool IsFlagged() const;
   void Flag();
+  void Unflag();
   const bool IsMine() const;
   const bool IsOpen() const;
+  const std::vector<std::vector<size_t>>& GetBoxesAround() const;
   /**
    * Opens the box if the box is not flagged
    * and returns true if the box is a bomb.
@@ -24,5 +26,6 @@ class Box {
   bool flagged_;
   bool mine_;
   bool open_;
+  std::vector<std::vector<size_t>> boxes_around_;
 };
 }

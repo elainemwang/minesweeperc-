@@ -16,14 +16,11 @@ Field::Field(const glm::vec2 &top_left_corner, size_t num_rows, size_t num_cols,
       pixel_side_length_(width / num_cols)
 {
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
+  game_over_ = false;
 }
 
 const std::vector<std::vector<Box>> Field::GetBoard() const{
   return board_;
-}
-
-const Box Field::GetBox(size_t i, size_t j) const {
-  return board_[i][j];
 }
 
 void Field::Draw() const {
@@ -55,5 +52,41 @@ void Field::Draw() const {
     }
   }
 }
+
+vec2 Field::BoxRowColFromMousePos(const glm::vec2 &mouse_screen_coords) {
+  vec2 field_coords =
+      (mouse_screen_coords - top_left_corner_) / (float)pixel_side_length_;
+  size_t i = field_coords.y;
+  size_t j = field_coords.x;
+  return vec2(i,j);
+}
+
+void Field::OpenBox(size_t i, size_t j) {
+  Box& current_box = board_[i][j];
+  if(current_box.OpenAndCheckGameOver()){
+    game_over_ = true;
+  }
+  /*
+  if(current_box.GetValue() == 0){
+    OpenBoxesAround(i,j);
+  }*/
+}
+
+
+void Field::OpenBoxesAround(size_t i, size_t j) {
+  Box& current_box = board_[i][j];
+  for(std::vector<size_t> box_pos : current_box.GetBoxesAround()){
+    board_[box_pos[0]][box_pos[1]];
+  }
+}
+
+void Field::FlagBox(size_t i, size_t j) {
+  board_[i][j].Flag();
+}
+
+void Field::UnflagBox(size_t i, size_t j) {
+  board_[i][j].Unflag();
+}
+
 } // namespace visualizer
 } // namespace minesweeper
