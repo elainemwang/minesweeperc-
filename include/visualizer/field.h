@@ -14,6 +14,7 @@ class Field {
  public:
   Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
         double width, size_t num_mines);
+  Field(size_t num_rows, size_t num_cols, double width);
   void Draw() const;
   const std::vector<std::vector<Box>> GetBoard() const;
 
@@ -37,6 +38,8 @@ class Field {
 
   void UnflagBox(size_t i, size_t j);
 
+  void SetBoxAsMine(size_t i, size_t j);
+
   /**
    * Opens all the boxes around a box.
    * @param i The row the box to open around belongs to.
@@ -51,6 +54,23 @@ class Field {
    * @return The number of flags around the box.
    */
   size_t FlagsAroundBox(size_t i, size_t j);
+
+  /**
+ * Count all the mines around each box and set the box value.
+ */
+  void SetAllBoxValues();
+
+  /**
+   * Sets the mines and box values.
+   * @param i The row position of the starting box.
+   * @param j The col position of the starting box.
+   */
+  void SetUpField(size_t i, size_t j);
+
+  /**
+   * Sets all boxes' boxes around.
+   */
+  void SetBoxesAround();
 
  private:
   std::vector<std::vector<Box>> board_;
@@ -68,23 +88,6 @@ class Field {
    * @param j The col position of the starting box.
    */
   void SetMines(size_t i, size_t j);
-
-  /**
-   * Count all the mines around each box and set the box value.
-   */
-  void SetAllBoxValues();
-
-  /**
-   * Sets the mines and box values.
-   * @param i The row position of the starting box.
-   * @param j The col position of the starting box.
-   */
-  void SetUpField(size_t i, size_t j);
-
-  /**
-   * Sets all boxes' boxes around.
-   */
-  void SetBoxesAround();
 };
 
 }  // namespace visualizer

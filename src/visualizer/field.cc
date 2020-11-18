@@ -23,6 +23,12 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
   SetUpField(0, 0);
 }
 
+Field::Field(size_t num_rows, size_t num_cols, double width) : num_rows_(num_rows),
+      num_cols_(num_cols), pixel_side_length_(width / num_cols){
+  board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
+  SetBoxesAround();
+}
+
 const std::vector<std::vector<Box>> Field::GetBoard() const {
   return board_;
 }
@@ -162,6 +168,10 @@ size_t Field::FlagsAroundBox(size_t i, size_t j) {
     }
   }
   return num_flags;
+}
+
+void Field::SetBoxAsMine(size_t i, size_t j) {
+  board_[i][j].SetMine();
 }
 
 }  // namespace visualizer
