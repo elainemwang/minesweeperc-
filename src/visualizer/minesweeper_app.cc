@@ -8,8 +8,9 @@ namespace minesweeper {
 
 namespace visualizer {
 
-MinesweeperApp::MinesweeperApp() : field_(glm::vec2(0,0), kNumRows, kNumCols,
-                                              kXWindowSize, 80){ //TODO: make the num mines adjustable
+MinesweeperApp::MinesweeperApp()
+    : field_(glm::vec2(0, 0), kNumRows, kNumCols, kXWindowSize,
+             80) {  // TODO: make the num mines adjustable
   ci::app::setWindowSize((int)kXWindowSize, (int)kYWindowSize);
 }
 void MinesweeperApp::draw() {
@@ -19,7 +20,7 @@ void MinesweeperApp::draw() {
 }
 void MinesweeperApp::mouseDown(ci::app::MouseEvent event) {
   glm::vec2 field_pos = field_.BoxRowColFromMousePos(event.getPos());
-  field_.OpenBox(field_pos.x,field_pos.y);
+  field_.OpenBox(field_pos.x, field_pos.y);
 }
 
 void MinesweeperApp::mouseMove(ci::app::MouseEvent event) {
@@ -34,23 +35,22 @@ void MinesweeperApp::keyDown(ci::app::KeyEvent event) {
       // the number of flags around is equal to the value of the box,
       // open all the boxes around it.
       if (!field_.GetBoard()[field_pos.x][field_pos.y].IsOpen()) {
-        if(field_.GetBoard()[field_pos.x][field_pos.y].IsFlagged()){
+        if (field_.GetBoard()[field_pos.x][field_pos.y].IsFlagged()) {
           field_.UnflagBox(field_pos.x, field_pos.y);
-        }
-        else{
+        } else {
           field_.FlagBox(field_pos.x, field_pos.y);
         }
       } else {
         // If the box is open and
         // the number of flags around is equal to the value of the box,
         // open all the boxes around it.
-        if(field_.FlagsAroundBox(field_pos.x, field_pos.y) ==
-            field_.GetBoard()[field_pos.x][field_pos.y].GetValue()){
+        if (field_.FlagsAroundBox(field_pos.x, field_pos.y) ==
+            field_.GetBoard()[field_pos.x][field_pos.y].GetValue()) {
           field_.OpenBoxesAround(field_pos.x, field_pos.y);
         }
       }
   }
 }
 
-} //namespace visualizer
-} //namespace minesweeper
+}  // namespace visualizer
+}  // namespace minesweeper

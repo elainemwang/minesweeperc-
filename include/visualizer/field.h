@@ -17,6 +17,12 @@ class Field {
   void Draw() const;
   const std::vector<std::vector<Box>> GetBoard() const;
 
+  /**
+   * Returns the box position that the mouse_screen_coords belongs to.
+   * @param mouse_screen_coords The mouse_screen_coords to calculate
+   * the box position from.
+   * @return The box position the mouse_screen_coords belongs to.
+   */
   glm::vec2 BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords);
 
   /**
@@ -31,8 +37,19 @@ class Field {
 
   void UnflagBox(size_t i, size_t j);
 
+  /**
+   * Opens all the boxes around a box.
+   * @param i The row the box to open around belongs to.
+   * @param j The col the box to open around belongs to.
+   */
   void OpenBoxesAround(size_t i, size_t j);
 
+  /**
+   * Returns the number of flags around a box.
+   * @param i The row the box to count the flags around belongs to.
+   * @param j The col the box to count the flags around belongs to.
+   * @return The number of flags around the box.
+   */
   size_t FlagsAroundBox(size_t i, size_t j);
 
  private:
@@ -45,21 +62,31 @@ class Field {
   double pixel_side_length_;
   bool game_over_;
 
+  /**
+   * Set all the mines in the field.
+   * @param i The row position of the starting box.
+   * @param j The col position of the starting box.
+   */
   void SetMines(size_t i, size_t j);
+
+  /**
+   * Count all the mines around each box and set the box value.
+   */
   void SetAllBoxValues();
 
   /**
-  * Sets the mines and box values.
-  * @param i starting box row
-  * @param j starting box column
-  */
+   * Sets the mines and box values.
+   * @param i The row position of the starting box.
+   * @param j The col position of the starting box.
+   */
   void SetUpField(size_t i, size_t j);
+
   /**
    * Sets all boxes' boxes around.
    */
   void SetBoxesAround();
 };
 
-}
+}  // namespace visualizer
 
-}
+}  // namespace minesweeper
