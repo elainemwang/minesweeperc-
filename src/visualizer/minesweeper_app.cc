@@ -14,45 +14,51 @@ MinesweeperApp::MinesweeperApp()
   ci::app::setWindowSize((int)kXWindowSize, (int)kYWindowSize);
 }
 void MinesweeperApp::draw() {
-  ci::Color8u background_color(255, 255, 255);  // light yellow
+  ci::Color8u background_color(255, 255, 255);
   ci::gl::clear(background_color);
   field_.Draw();
 }
 void MinesweeperApp::mouseDown(ci::app::MouseEvent event) {
-  glm::vec2 field_pos = field_.BoxRowColFromMousePos(event.getPos());
-  if(!game_start_){
-    game_start_ = true;
-    field_.SetUpField(field_pos.x, field_pos.y);
+  if(!field_.IsGameOver()) {
+    glm::vec2 field_pos = field_.BoxRowColFromMousePos(event.getPos());
+    if (!game_start_) {
+      game_start_ = true;
+      field_.SetUpField(field_pos.x, field_pos.y);
+    }
+    field_.OpenBox(field_pos.x, field_pos.y);
   }
-  field_.OpenBox(field_pos.x, field_pos.y);
 }
 
 void MinesweeperApp::mouseMove(ci::app::MouseEvent event) {
-  mouse_pos_ = event.getPos();
+  if(!field_.IsGameOver()) {
+    mouse_pos_ = event.getPos();
+  }
 }
 
 void MinesweeperApp::keyDown(ci::app::KeyEvent event) {
-  glm::vec2 field_pos = field_.BoxRowColFromMousePos(mouse_pos_);
-  switch (event.getCode()) {
-    case ci::app::KeyEvent::KEY_SPACE:
-      // If the box is closed, flag it. If the box is open and
-      // the number of flags around is equal to the value of the box,
-      // open all the boxes around it.
-      if (!field_.GetBoard()[field_pos.x][field_pos.y].IsOpen()) {
-        if (field_.GetBoard()[field_pos.x][field_pos.y].IsFlagged()) {
-          field_.UnflagBox(field_pos.x, field_pos.y);
-        } else {
-          field_.FlagBox(field_pos.x, field_pos.y);
-        }
-      } else {
-        // If the box is open and
+  if(!field_.IsGameOver()) {
+    glm::vec2 field_pos = field_.BoxRowColFromMousePos(mouse_pos_);
+    switch (event.getCode()) {
+      case ci::app::KeyEvent::KEY_SPACE:
+        // If the box is closed, flag it. If the box is open and
         // the number of flags around is equal to the value of the box,
         // open all the boxes around it.
-        if (field_.FlagsAroundBox(field_pos.x, field_pos.y) ==
-            field_.GetBoard()[field_pos.x][field_pos.y].GetValue()) {
-          field_.OpenBoxesAround(field_pos.x, field_pos.y);
+        if (!field_.GetBoard()[field_pos.x][field_pos.y].IsOpen()) {
+          if (field_.GetBoard()[field_pos.x][field_pos.y].IsFlagged()) {
+            field_.UnflagBox(field_pos.x, field_pos.y);
+          } else {
+            field_.FlagBox(field_pos.x, field_pos.y);
+          }
+        } else {
+          // If the box is open and
+          // the number of flags around is equal to the value of the box,
+          // open all the boxes around it.
+          if (field_.FlagsAroundBox(field_pos.x, field_pos.y) ==
+              field_.GetBoard()[field_pos.x][field_pos.y].GetValue()) {
+            field_.OpenBoxesAround(field_pos.x, field_pos.y);
+          }
         }
-      }
+    }
   }
 }
 

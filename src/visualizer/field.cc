@@ -19,14 +19,16 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
   game_over_ = false;
   SetBoxesAround();
-  // TODO: let this take an argument with the first box opened
-  //SetUpField(0, 0);
 }
 
 Field::Field(size_t num_rows, size_t num_cols, double width) : num_rows_(num_rows),
       num_cols_(num_cols), pixel_side_length_(width / num_cols){
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
   SetBoxesAround();
+}
+
+const bool Field::IsGameOver() const {
+  return game_over_;
 }
 
 const std::vector<std::vector<Box>> Field::GetBoard() const {

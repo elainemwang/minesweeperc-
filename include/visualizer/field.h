@@ -17,6 +17,7 @@ class Field {
   Field(size_t num_rows, size_t num_cols, double width);
   void Draw() const;
   const std::vector<std::vector<Box>> GetBoard() const;
+  const bool IsGameOver() const;
 
   /**
    * Returns the box position that the mouse_screen_coords belongs to.
