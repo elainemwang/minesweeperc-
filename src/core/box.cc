@@ -45,10 +45,8 @@ void Box::AddBoxAround(size_t i, size_t j) {
 }
 
 bool Box::OpenAndCheckGameOver() {
-  if(!flagged_){
-    open_ = true;
-  }
-  if(open_ && mine_){
+  open_ = true;
+  if(mine_){
     return true;
   }
   return false;

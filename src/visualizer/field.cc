@@ -137,31 +137,32 @@ void Field::SetAllBoxValues() {
 
 void Field::OpenBox(size_t i, size_t j) {
   Box& current_box = board_[i][j];
-  if (current_box.OpenAndCheckGameOver()) {
-    game_over_ = true;
-    for(std::vector<Box>& row : board_){
-      for (Box& b : row){
-        if(b.IsFlagged() && !b.IsMine()){
-          //TODO: if flagged incorrectly, set to bomb with an "x" over it
-          //also need to add this to the draw method
+  if (!current_box.IsOpen() && !current_box.IsFlagged()) {
+    if (current_box.OpenAndCheckGameOver()) {
+      game_over_ = true;
+      // display after the game ends and a mine is opened
+      for (std::vector<Box>& row : board_) {
+        for (Box& b : row) {
+          if (b.IsFlagged() && !b.IsMine()) {
+            // TODO: if flagged incorrectly, set to bomb with an "x" over it
+            // also need to add this to the draw method
+          } else if (b.IsMine() && b.IsOpen()) {
+            // TODO: if bomb is opened, set to bomb with a red background
+          }
+          b.OpenAndCheckGameOver();
         }
-        else if(b.IsMine() && b.IsOpen()){
-          //TODO: if bomb is opened, set to bomb with a red background
-        }
-        b.OpenAndCheckGameOver();
+      }
+    } else {
+      num_correct_unopened_--;
+      if (num_correct_unopened_ == 0) {
+        game_over_ = true;
+        win_ = true;
       }
     }
-  }
-  else {
-    num_correct_unopened_--;
-    if (num_correct_unopened_ == 0){
-      game_over_ = true;
-      win_ = true;
+    if (!current_box.IsMine() && current_box.GetValue() == 0 &&
+        current_box.IsOpen()) {
+      OpenBoxesAround(i, j);
     }
-  }
-  if (!current_box.IsMine() && current_box.GetValue() == 0 &&
-      current_box.IsOpen()) {
-    OpenBoxesAround(i, j);
   }
 }
 
