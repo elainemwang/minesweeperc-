@@ -23,9 +23,11 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
   SetBoxesAround();
 }
 
-Field::Field(size_t num_rows, size_t num_cols, double width) : num_rows_(num_rows),
-      num_cols_(num_cols), pixel_side_length_(width / num_cols){
+Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
+    : num_rows_(num_rows),num_cols_(num_cols),
+      pixel_side_length_(width / num_cols){
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
+  num_correct_unopened_ = num_rows * num_cols - num_mines;
   game_over_ = false;
   win_ = false;
   SetBoxesAround();
@@ -148,6 +150,13 @@ void Field::OpenBox(size_t i, size_t j) {
         }
         b.OpenAndCheckGameOver();
       }
+    }
+  }
+  else {
+    num_correct_unopened_--;
+    if (num_correct_unopened_ == 0){
+      game_over_ = true;
+      win_ = true;
     }
   }
   if (!current_box.IsMine() && current_box.GetValue() == 0 &&

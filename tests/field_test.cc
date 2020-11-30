@@ -4,7 +4,7 @@
 
 TEST_CASE("Counting flags around") {
   SECTION("2x2 board") {
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 0);
     field.FlagBox(0, 0);
     field.FlagBox(1, 1);
     REQUIRE(field.FlagsAroundBox(0, 0) == 1);
@@ -13,7 +13,7 @@ TEST_CASE("Counting flags around") {
     REQUIRE(field.FlagsAroundBox(1, 1) == 1);
   }
   SECTION("3x3 board") {
-    minesweeper::visualizer::Field field(3, 3, 0);
+    minesweeper::visualizer::Field field(3, 3, 0, 0);
     field.FlagBox(1, 0);
     field.FlagBox(2, 1);
     field.FlagBox(0, 2);
@@ -31,7 +31,7 @@ TEST_CASE("Counting flags around") {
 
 TEST_CASE("Calculating box values") {
   SECTION("2x2 board") {
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 2);
     field.SetBoxAsMine(0, 0);
     field.SetBoxAsMine(1, 1);
     field.SetAllBoxValues();
@@ -41,7 +41,7 @@ TEST_CASE("Calculating box values") {
     REQUIRE(field.GetBoard()[1][1].GetValue() == 1);
   }
   SECTION("3x3 board") {
-    minesweeper::visualizer::Field field(3, 3, 0);
+    minesweeper::visualizer::Field field(3, 3, 0, 2);
     field.SetBoxAsMine(1, 0);
     field.SetBoxAsMine(2, 1);
     field.SetBoxAsMine(0, 2);
@@ -59,7 +59,7 @@ TEST_CASE("Calculating box values") {
 }
 
 TEST_CASE("Getting box position from mouse coordinates") {
-  minesweeper::visualizer::Field field(3, 3, 30);
+  minesweeper::visualizer::Field field(3, 3, 30, 0);
   SECTION("Top left") {
     REQUIRE(field.BoxRowColFromMousePos(glm::vec2(5, 7)) == glm::vec2(0, 0));
   }
@@ -79,7 +79,7 @@ TEST_CASE("Getting box position from mouse coordinates") {
 
 TEST_CASE("Setting the boxes around a box") {
   SECTION("2x2 board") {
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 0);
     REQUIRE(field.GetBoard()[0][0].GetBoxesAround() ==
             std::vector<std::vector<size_t>>{{0, 1}, {1, 0}, {1, 1}});
     REQUIRE(field.GetBoard()[0][1].GetBoxesAround() ==
@@ -94,7 +94,7 @@ TEST_CASE("Setting the boxes around a box") {
 // Game Over Testing
 TEST_CASE("Game over from opening a mine") {
   SECTION("2x2 - Mine is opened -> Game Over"){
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 2);
     field.SetBoxAsMine(0, 0);
     field.SetBoxAsMine(1, 1);
     field.SetAllBoxValues();
@@ -103,7 +103,7 @@ TEST_CASE("Game over from opening a mine") {
     REQUIRE_FALSE(field.IsGameWon());
   }
   SECTION("2x2 - Non-Mine is opened -> Game not over"){
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 2);
     field.SetBoxAsMine(0, 0);
     field.SetBoxAsMine(1, 1);
     field.SetAllBoxValues();
@@ -112,7 +112,7 @@ TEST_CASE("Game over from opening a mine") {
     REQUIRE_FALSE(field.IsGameWon());
   }
   SECTION("3x3 - Mine is opened -> Game Over"){
-    minesweeper::visualizer::Field field(3, 3, 0);
+    minesweeper::visualizer::Field field(3, 3, 0, 3);
     field.SetBoxAsMine(1, 0);
     field.SetBoxAsMine(2, 1);
     field.SetBoxAsMine(0, 2);
@@ -122,7 +122,7 @@ TEST_CASE("Game over from opening a mine") {
     REQUIRE_FALSE(field.IsGameWon());
   }
   SECTION("3x3 - Non-Mine is opened -> Game not over"){
-    minesweeper::visualizer::Field field(3, 3, 0);
+    minesweeper::visualizer::Field field(3, 3, 0, 3);
     field.SetBoxAsMine(1, 0);
     field.SetBoxAsMine(2, 1);
     field.SetBoxAsMine(0, 2);
@@ -135,7 +135,7 @@ TEST_CASE("Game over from opening a mine") {
 
 TEST_CASE("Game over from winning") {
   SECTION("2x2 - All non-mines are opened"){
-    minesweeper::visualizer::Field field(2, 2, 0);
+    minesweeper::visualizer::Field field(2, 2, 0, 2);
     field.SetBoxAsMine(0, 0);
     field.SetBoxAsMine(1, 1);
     field.SetAllBoxValues();
@@ -145,7 +145,7 @@ TEST_CASE("Game over from winning") {
     REQUIRE(field.IsGameWon());
   }
   SECTION("3x3 - All non-mines are opened"){
-    minesweeper::visualizer::Field field(3, 3, 0);
+    minesweeper::visualizer::Field field(3, 3, 0, 3);
     field.SetBoxAsMine(1, 0);
     field.SetBoxAsMine(2, 1);
     field.SetBoxAsMine(0, 2);

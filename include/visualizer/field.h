@@ -14,7 +14,7 @@ class Field {
  public:
   Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
         double width, size_t num_mines);
-  Field(size_t num_rows, size_t num_cols, double width);
+  Field(size_t num_rows, size_t num_cols, double width, size_t num_mines);
   void Draw() const;
   const std::vector<std::vector<Box>> GetBoard() const;
   const bool IsGameOver() const;
