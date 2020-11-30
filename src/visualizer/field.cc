@@ -20,7 +20,7 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
   game_over_ = false;
   SetBoxesAround();
   // TODO: let this take an argument with the first box opened
-  SetUpField(0, 0);
+  //SetUpField(0, 0);
 }
 
 Field::Field(size_t num_rows, size_t num_cols, double width) : num_rows_(num_rows),
@@ -88,10 +88,19 @@ void Field::SetMines(size_t i, size_t j) {
   size_t mines_left = num_mines_;
   size_t row;
   size_t col;
+  bool in_starting_box;
   while (mines_left > 0) {
+    in_starting_box = false;
     row = rand() % num_rows_;
     col = rand() % num_cols_;
-    if (!board_[row][col].IsMine()) {
+    // check if the mine tile is in the starting nine squares
+    for(std::vector<size_t> box : board_[i][j].GetBoxesAround()){
+      if((row == box[0] && col == box[1]) || (row == i && col == j)){
+        in_starting_box = true;
+        break;
+      }
+    }
+    if (!board_[row][col].IsMine() && !in_starting_box) {
       board_[row][col].SetMine();
       --mines_left;
     }

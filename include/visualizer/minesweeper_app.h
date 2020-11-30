@@ -29,6 +29,7 @@ class MinesweeperApp : public ci::app::App {
  private:
   Field field_;
   glm::vec2 mouse_pos_;
+  bool game_start_ = false;
 };
 }
 }

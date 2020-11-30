@@ -20,6 +20,10 @@ void MinesweeperApp::draw() {
 }
 void MinesweeperApp::mouseDown(ci::app::MouseEvent event) {
   glm::vec2 field_pos = field_.BoxRowColFromMousePos(event.getPos());
+  if(!game_start_){
+    game_start_ = true;
+    field_.SetUpField(field_pos.x, field_pos.y);
+  }
   field_.OpenBox(field_pos.x, field_pos.y);
 }
 
