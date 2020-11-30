@@ -17,18 +17,26 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
       num_mines_(num_mines),
       pixel_side_length_(width / num_cols) {
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
+  num_correct_unopened_ = num_rows * num_cols - num_mines;
   game_over_ = false;
+  win_ = false;
   SetBoxesAround();
 }
 
 Field::Field(size_t num_rows, size_t num_cols, double width) : num_rows_(num_rows),
       num_cols_(num_cols), pixel_side_length_(width / num_cols){
   board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
+  game_over_ = false;
+  win_ = false;
   SetBoxesAround();
 }
 
 const bool Field::IsGameOver() const {
   return game_over_;
+}
+
+const bool Field::IsGameWon() const {
+  return win_;
 }
 
 const std::vector<std::vector<Box>> Field::GetBoard() const {
@@ -129,6 +137,18 @@ void Field::OpenBox(size_t i, size_t j) {
   Box& current_box = board_[i][j];
   if (current_box.OpenAndCheckGameOver()) {
     game_over_ = true;
+    for(std::vector<Box>& row : board_){
+      for (Box& b : row){
+        if(b.IsFlagged() && !b.IsMine()){
+          //TODO: if flagged incorrectly, set to bomb with an "x" over it
+          //also need to add this to the draw method
+        }
+        else if(b.IsMine() && b.IsOpen()){
+          //TODO: if bomb is opened, set to bomb with a red background
+        }
+        b.OpenAndCheckGameOver();
+      }
+    }
   }
   if (!current_box.IsMine() && current_box.GetValue() == 0 &&
       current_box.IsOpen()) {

@@ -18,6 +18,7 @@ class Field {
   void Draw() const;
   const std::vector<std::vector<Box>> GetBoard() const;
   const bool IsGameOver() const;
+  const bool IsGameWon() const;
 
   /**
    * Returns the box position that the mouse_screen_coords belongs to.
@@ -79,9 +80,11 @@ class Field {
   size_t num_rows_;
   size_t num_cols_;
   size_t num_mines_;
+  size_t num_correct_unopened_;
   /** Number of screen pixels in the width/height of one box*/
   double pixel_side_length_;
   bool game_over_;
+  bool win_;
 
   /**
    * Set all the mines in the field.

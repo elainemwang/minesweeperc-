@@ -90,3 +90,73 @@ TEST_CASE("Setting the boxes around a box") {
             std::vector<std::vector<size_t>>{{0, 0}, {0, 1}, {1, 0}});
   }
 }
+
+// Game Over Testing
+TEST_CASE("Game over from opening a mine") {
+  SECTION("2x2 - Mine is opened -> Game Over"){
+    minesweeper::visualizer::Field field(2, 2, 0);
+    field.SetBoxAsMine(0, 0);
+    field.SetBoxAsMine(1, 1);
+    field.SetAllBoxValues();
+    field.OpenBox(0,0);
+    REQUIRE(field.IsGameOver());
+    REQUIRE_FALSE(field.IsGameWon());
+  }
+  SECTION("2x2 - Non-Mine is opened -> Game not over"){
+    minesweeper::visualizer::Field field(2, 2, 0);
+    field.SetBoxAsMine(0, 0);
+    field.SetBoxAsMine(1, 1);
+    field.SetAllBoxValues();
+    field.OpenBox(1,0);
+    REQUIRE_FALSE(field.IsGameOver());
+    REQUIRE_FALSE(field.IsGameWon());
+  }
+  SECTION("3x3 - Mine is opened -> Game Over"){
+    minesweeper::visualizer::Field field(3, 3, 0);
+    field.SetBoxAsMine(1, 0);
+    field.SetBoxAsMine(2, 1);
+    field.SetBoxAsMine(0, 2);
+    field.SetAllBoxValues();
+    field.OpenBox(2,1);
+    REQUIRE(field.IsGameOver());
+    REQUIRE_FALSE(field.IsGameWon());
+  }
+  SECTION("3x3 - Non-Mine is opened -> Game not over"){
+    minesweeper::visualizer::Field field(3, 3, 0);
+    field.SetBoxAsMine(1, 0);
+    field.SetBoxAsMine(2, 1);
+    field.SetBoxAsMine(0, 2);
+    field.SetAllBoxValues();
+    field.OpenBox(1,1);
+    REQUIRE_FALSE(field.IsGameOver());
+    REQUIRE_FALSE(field.IsGameWon());
+  }
+}
+
+TEST_CASE("Game over from winning") {
+  SECTION("2x2 - All non-mines are opened"){
+    minesweeper::visualizer::Field field(2, 2, 0);
+    field.SetBoxAsMine(0, 0);
+    field.SetBoxAsMine(1, 1);
+    field.SetAllBoxValues();
+    field.OpenBox(0,1);
+    field.OpenBox(1,0);
+    REQUIRE(field.IsGameOver());
+    REQUIRE(field.IsGameWon());
+  }
+  SECTION("3x3 - All non-mines are opened"){
+    minesweeper::visualizer::Field field(3, 3, 0);
+    field.SetBoxAsMine(1, 0);
+    field.SetBoxAsMine(2, 1);
+    field.SetBoxAsMine(0, 2);
+    field.SetAllBoxValues();
+    field.OpenBox(0,0);
+    field.OpenBox(0,1);
+    field.OpenBox(1,1);
+    field.OpenBox(1,2);
+    field.OpenBox(2,0);
+    field.OpenBox(2,2);
+    REQUIRE(field.IsGameOver());
+    REQUIRE(field.IsGameWon());
+  }
+}
