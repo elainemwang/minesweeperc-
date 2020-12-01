@@ -23,6 +23,7 @@ class MinesweeperApp : public ci::app::App {
 
   const double kXWindowSize = 700;
   const double kYWindowSize = 500;
+  const double kTopBorder = 50;
   const size_t kNumCols = 28;
   const size_t kNumRows = 20;
 

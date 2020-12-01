@@ -11,6 +11,17 @@ namespace minesweeper {
 namespace visualizer {
 
 class Field {
+  struct Container {
+    Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color) :
+          top_left_(top_left), bottom_right_(bottom_right), color_(color) {
+      bounding_box_ = ci::Rectf(top_left, bottom_right);
+    }
+    glm::vec2 top_left_;
+    glm::vec2 bottom_right_;
+    ci::Color color_;
+    ci::Rectf bounding_box_;
+  };
+
  public:
   Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
         double width, size_t num_mines);
@@ -74,17 +85,27 @@ class Field {
    */
   void SetBoxesAround();
 
+  /**
+   * The game is reset when the restart button is hit.
+   */
+  void RestartGame();
+  const bool IsRestartButtonHit(const glm::vec2& mouse_screen_coords) const;
+
  private:
   std::vector<std::vector<Box>> board_;
   glm::vec2 top_left_corner_;
   size_t num_rows_;
   size_t num_cols_;
   size_t num_mines_;
-  size_t num_correct_unopened_;
-  /** Number of screen pixels in the width/height of one box*/
+  // Number of screen pixels in the width/height of one box
   double pixel_side_length_;
+
+  size_t num_correct_unopened_;
   bool game_over_;
   bool win_;
+  Container restart_button_;
+  //Container timer_;
+  //Container mines_left_;
 
   /**
    * Set all the mines in the field.
