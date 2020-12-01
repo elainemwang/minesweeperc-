@@ -5,6 +5,7 @@
 
 #include "cinder/gl/gl.h"
 #include "core/box.h"
+#include "cinder/Timer.h"
 
 namespace minesweeper {
 
@@ -12,14 +13,23 @@ namespace visualizer {
 
 class Field {
   struct Container {
-    Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color) :
-          top_left_(top_left), bottom_right_(bottom_right), color_(color) {
+    Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color)
+        : top_left_(top_left), bottom_right_(bottom_right), color_(color) {
+      bounding_box_ = ci::Rectf(top_left, bottom_right);
+    }
+    Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color,
+              std::string text)
+        : top_left_(top_left),
+          bottom_right_(bottom_right),
+          color_(color),
+          text_(text) {
       bounding_box_ = ci::Rectf(top_left, bottom_right);
     }
     glm::vec2 top_left_;
     glm::vec2 bottom_right_;
     ci::Color color_;
     ci::Rectf bounding_box_;
+    std::string text_;
   };
 
  public:
@@ -69,8 +79,8 @@ class Field {
   size_t FlagsAroundBox(size_t i, size_t j);
 
   /**
- * Count all the mines around each box and set the box value.
- */
+   * Count all the mines around each box and set the box value.
+   */
   void SetAllBoxValues();
 
   /**
@@ -89,7 +99,16 @@ class Field {
    * The game is reset when the restart button is hit.
    */
   void RestartGame();
+  /**
+   * Given the mouse's coordinates, it returns a boolean representing
+   * whether or not the restart button is touched by the mouse.
+   * @param mouse_screen_coords The mouse's screen coordinates
+   * @return Whether or not the restart button is touched by the mouse.
+   */
   const bool IsRestartButtonHit(const glm::vec2& mouse_screen_coords) const;
+
+
+  void UpdateTimer();
 
  private:
   std::vector<std::vector<Box>> board_;
@@ -104,8 +123,9 @@ class Field {
   bool game_over_;
   bool win_;
   Container restart_button_;
-  //Container timer_;
-  //Container mines_left_;
+  Container timer_;
+  ci::Timer cinder_timer_;
+  // Container mines_left_;
 
   /**
    * Set all the mines in the field.
