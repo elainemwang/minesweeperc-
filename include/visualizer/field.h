@@ -17,19 +17,10 @@ class Field {
         : top_left_(top_left), bottom_right_(bottom_right), color_(color) {
       bounding_box_ = ci::Rectf(top_left, bottom_right);
     }
-    Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color,
-              std::string text)
-        : top_left_(top_left),
-          bottom_right_(bottom_right),
-          color_(color),
-          text_(text) {
-      bounding_box_ = ci::Rectf(top_left, bottom_right);
-    }
     glm::vec2 top_left_;
     glm::vec2 bottom_right_;
     ci::Color color_;
     ci::Rectf bounding_box_;
-    std::string text_;
   };
 
  public:
@@ -108,8 +99,6 @@ class Field {
   const bool IsRestartButtonHit(const glm::vec2& mouse_screen_coords) const;
 
 
-  void UpdateTimer();
-
  private:
   std::vector<std::vector<Box>> board_;
   glm::vec2 top_left_corner_;
@@ -120,12 +109,13 @@ class Field {
   double pixel_side_length_;
 
   size_t num_correct_unopened_;
+  size_t num_flagged_;
   bool game_over_;
   bool win_;
   Container restart_button_;
   Container timer_;
   ci::Timer cinder_timer_;
-  // Container mines_left_;
+  Container mines_left_;
 
   /**
    * Set all the mines in the field.

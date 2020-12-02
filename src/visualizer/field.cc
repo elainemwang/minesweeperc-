@@ -24,12 +24,12 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
       timer_(top_left_corner_ + vec2((num_cols - 2) * pixel_side_length_, -30),
              top_left_corner_ + vec2((num_cols - 2) * pixel_side_length_, -30) +
              vec2(pixel_side_length_, pixel_side_length_),
-             ci::Color("black"),"0"){
-  board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
-  num_correct_unopened_ = num_rows * num_cols - num_mines;
-  game_over_ = false;
-  win_ = false;
-  SetBoxesAround();
+             ci::Color("black")),
+      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -30),
+                  top_left_corner_ + vec2(pixel_side_length_, -30) +
+                  vec2(pixel_side_length_, pixel_side_length_),
+                  ci::Color("black")){
+  RestartGame();
 }
 
 Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
@@ -40,12 +40,12 @@ Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
                       glm::vec2(0, 0), ci::Color("blue")),
       timer_(glm::vec2(0, 0),
              glm::vec2(0, 0),
-             ci::Color("black"),"0"){
-  board_.assign(num_rows, std::vector<Box>(num_cols, Box()));
-  num_correct_unopened_ = num_rows * num_cols - num_mines;
-  game_over_ = false;
-  win_ = false;
-  SetBoxesAround();
+             ci::Color("black")),
+      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -30),
+                  top_left_corner_ + vec2(pixel_side_length_, -30) +
+                  vec2(pixel_side_length_, pixel_side_length_),
+                  ci::Color("black")){
+  RestartGame();
 }
 
 const bool Field::IsGameOver() const {
@@ -104,6 +104,10 @@ void Field::Draw() const {
   // Timer
   ci::gl::drawString(std::to_string((int) cinder_timer_.getSeconds()),
                      timer_.top_left_, timer_.color_);
+
+  // Number of unflagged mines left
+  ci::gl::drawString(std::to_string(num_mines_ - num_flagged_),
+                     mines_left_.top_left_, mines_left_.color_);
 }
 
 vec2 Field::BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords) {
@@ -223,10 +227,12 @@ void Field::SetBoxesAround() {
 
 void Field::FlagBox(size_t i, size_t j) {
   board_[i][j].Flag();
+  ++num_flagged_;
 }
 
 void Field::UnflagBox(size_t i, size_t j) {
   board_[i][j].Unflag();
+  --num_flagged_;
 }
 
 size_t Field::FlagsAroundBox(size_t i, size_t j) {
@@ -246,6 +252,7 @@ void Field::SetBoxAsMine(size_t i, size_t j) {
 void Field::RestartGame() {
   board_.assign(num_rows_, std::vector<Box>(num_cols_, Box()));
   num_correct_unopened_ = num_rows_ * num_cols_ - num_mines_;
+  num_flagged_ = 0;
   game_over_ = false;
   win_ = false;
   restart_button_.color_ = ci::Color("blue");
