@@ -2,6 +2,8 @@
 // Created by Elaine Wang on 11/16/20.
 //
 #include "visualizer/field.h"
+#include "cinder/ImageIo.h"
+#include "cinder/gl/Texture.h"
 
 namespace minesweeper {
 
@@ -73,33 +75,65 @@ void Field::Draw() const {
       if (b.IsOpen()) {
         // if the box is open
         if (b.IsMine()) {  // if the box is a mine
-          ci::gl::color(ci::Color("black"));
-          ci::gl::drawSolidRect(pixel_bounding_box);
+          ci::gl::color(ci::Color("white"));
+          ci::gl::draw(mine_reg_, pixel_bounding_box);
         } else {  // otherwise draw the number (except zero)
-          if (b.GetValue() != 0) {
-            ci::gl::drawStringCentered(
-                std::to_string(b.GetValue()),
-                vec2((pixel_top_left.x + pixel_bottom_right.x) / 2,
-                     (pixel_top_left.y + pixel_bottom_right.y) / 2),
-                ci::Color(
-                    "black"));  // TODO: different colors for different numbers
+          ci::gl::color(ci::Color("white"));
+          switch(b.GetValue()) {
+            case 0:
+              ci::gl::draw(zero_, pixel_bounding_box);
+              break;
+            case 1:
+              ci::gl::draw(one_, pixel_bounding_box);
+              break;
+            case 2:
+              ci::gl::draw(two_, pixel_bounding_box);
+              break;
+            case 3:
+              ci::gl::draw(three_, pixel_bounding_box);
+              break;
+            case 4:
+              ci::gl::draw(four_, pixel_bounding_box);
+              break;
+            case 5:
+              ci::gl::draw(five_, pixel_bounding_box);
+              break;
+            case 6:
+              ci::gl::draw(six_, pixel_bounding_box);
+              break;
+            case 7:
+              ci::gl::draw(seven_, pixel_bounding_box);
+              break;
+            case 8:
+              ci::gl::draw(eight_, pixel_bounding_box);
+              break;
           }
         }
       } else if (b.IsFlagged()) {  // if the box is flagged
-        ci::gl::color(ci::Color("red"));
-        ci::gl::drawSolidRect(pixel_bounding_box);
+        ci::gl::color(ci::Color("white"));
+        ci::gl::draw(flag_image_, pixel_bounding_box);
       } else {  // if the box is closed
-        ci::gl::color(ci::Color("gray"));
-        ci::gl::drawSolidRect(pixel_bounding_box);
+        ci::gl::color(ci::Color("white"));
+        ci::gl::draw(closed_box_image_, pixel_bounding_box);
       }
-      ci::gl::color(ci::Color("black"));
+      ci::gl::color(ci::Color("gray"));
       ci::gl::drawStrokedRect(pixel_bounding_box);
     }
   }
 
   // Restart game button
-  ci::gl::color(restart_button_.color_);
-  ci::gl::drawSolidRect(restart_button_.bounding_box_);
+  ci::gl::color(ci::Color("white"));
+  if(!game_over_){
+    ci::gl::draw(restart_button_reg_, restart_button_.bounding_box_);
+  }
+  else {
+    if(!win_){
+      ci::gl::draw(restart_button_l_, restart_button_.bounding_box_);
+    }
+    else{
+      ci::gl::draw(restart_button_w_, restart_button_.bounding_box_);
+    }
+  }
 
   // Timer
   ci::gl::drawString(std::to_string((int) cinder_timer_.getSeconds()),
@@ -108,6 +142,7 @@ void Field::Draw() const {
   // Number of unflagged mines left
   ci::gl::drawString(std::to_string(num_mines_ - num_flagged_),
                      mines_left_.top_left_, mines_left_.color_);
+
 }
 
 vec2 Field::BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords) {
@@ -266,6 +301,10 @@ const bool Field::IsRestartButtonHit(
            mouse_screen_coords.x < restart_button_.bottom_right_.x) &&
           (mouse_screen_coords.y > restart_button_.top_left_.y &&
            mouse_screen_coords.y < restart_button_.bottom_right_.y));
+}
+
+Field::Container Field::GetRestartButton() {
+  return restart_button_;
 }
 
 }  // namespace visualizer

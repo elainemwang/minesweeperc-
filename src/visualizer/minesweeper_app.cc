@@ -14,7 +14,7 @@ MinesweeperApp::MinesweeperApp()
   ci::app::setWindowSize((int)kXWindowSize, (int)kYWindowSize+(int)kTopBorder);
 }
 void MinesweeperApp::draw() {
-  ci::Color8u background_color(255, 255, 255);
+  ci::Color8u background_color(190, 190, 190);
   ci::gl::clear(background_color);
   field_.Draw();
 }

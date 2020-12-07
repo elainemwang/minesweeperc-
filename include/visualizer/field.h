@@ -6,6 +6,8 @@
 #include "cinder/gl/gl.h"
 #include "core/box.h"
 #include "cinder/Timer.h"
+#include "cinder/ImageIo.h"
+#include "cinder/gl/Texture.h"
 
 namespace minesweeper {
 
@@ -98,6 +100,8 @@ class Field {
    */
   const bool IsRestartButtonHit(const glm::vec2& mouse_screen_coords) const;
 
+  Container GetRestartButton();
+
 
  private:
   std::vector<std::vector<Box>> board_;
@@ -116,6 +120,41 @@ class Field {
   Container timer_;
   ci::Timer cinder_timer_;
   Container mines_left_;
+
+  ci::gl::Texture2dRef closed_box_image_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/closed_box.png")));
+  ci::gl::Texture2dRef restart_button_reg_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_reg.png")));
+  ci::gl::Texture2dRef restart_button_l_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_l.png")));
+  ci::gl::Texture2dRef restart_button_w_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_w.png")));
+  ci::gl::Texture2dRef flag_image_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/flag.png")));
+  ci::gl::Texture2dRef mine_reg_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/mine_reg.png")));
+  ci::gl::Texture2dRef mine_red_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/mine_red.png")));
+
+  //Numbers
+  ci::gl::Texture2dRef zero_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/0.png")));
+  ci::gl::Texture2dRef one_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/1.png")));
+  ci::gl::Texture2dRef two_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/2.png")));
+  ci::gl::Texture2dRef three_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/3.png")));
+  ci::gl::Texture2dRef four_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/4.png")));
+  ci::gl::Texture2dRef five_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/5.png")));
+  ci::gl::Texture2dRef six_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/6.png")));
+  ci::gl::Texture2dRef seven_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/7.png")));
+  ci::gl::Texture2dRef eight_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/8.png")));
 
   /**
    * Set all the mines in the field.
