@@ -2,6 +2,7 @@
 // Created by Elaine Wang on 11/16/20.
 //
 #include "visualizer/field.h"
+
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
@@ -19,18 +20,20 @@ Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
       num_mines_(num_mines),
       pixel_side_length_(width / num_cols),
       restart_button_(
-          top_left_corner_ + vec2(num_cols / 2 * pixel_side_length_, -37),
-          top_left_corner_ + vec2(num_cols / 2 * pixel_side_length_, -37) +
-              vec2(pixel_side_length_, pixel_side_length_),
+          top_left_corner_ +
+              vec2((num_cols / 2 - 0.5) * pixel_side_length_, -45),
+          top_left_corner_ +
+              vec2((num_cols / 2 - 0.5) * pixel_side_length_, -45) +
+              vec2(1.5 * pixel_side_length_, 1.5 * pixel_side_length_),
           ci::Color("blue")),
-      timer_(top_left_corner_ + vec2((num_cols - 2) * pixel_side_length_, -30),
-             top_left_corner_ + vec2((num_cols - 2) * pixel_side_length_, -30) +
-             vec2(pixel_side_length_, pixel_side_length_),
-             ci::Color("black")),
-      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -30),
-                  top_left_corner_ + vec2(pixel_side_length_, -30) +
-                  vec2(pixel_side_length_, pixel_side_length_),
-                  ci::Color("black")){
+      timer_(top_left_corner_ + vec2((num_cols - 3) * pixel_side_length_, -40),
+             top_left_corner_ + vec2((num_cols - 3) * pixel_side_length_, -40) +
+                 vec2(2 * pixel_side_length_, pixel_side_length_),
+             ci::Color("red")),
+      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -40),
+                  top_left_corner_ + vec2(pixel_side_length_, -40) +
+                      vec2(2 * pixel_side_length_, pixel_side_length_),
+                  ci::Color("red")) {
   RestartGame();
 }
 
@@ -38,15 +41,12 @@ Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
     : num_rows_(num_rows),
       num_cols_(num_cols),
       pixel_side_length_(width / num_cols),
-      restart_button_(glm::vec2(0, 0),
-                      glm::vec2(0, 0), ci::Color("blue")),
-      timer_(glm::vec2(0, 0),
-             glm::vec2(0, 0),
-             ci::Color("black")),
+      restart_button_(glm::vec2(0, 0), glm::vec2(0, 0), ci::Color("blue")),
+      timer_(glm::vec2(0, 0), glm::vec2(0, 0), ci::Color("black")),
       mines_left_(top_left_corner_ + vec2(pixel_side_length_, -30),
                   top_left_corner_ + vec2(pixel_side_length_, -30) +
-                  vec2(pixel_side_length_, pixel_side_length_),
-                  ci::Color("black")){
+                      vec2(pixel_side_length_, pixel_side_length_),
+                  ci::Color("black")) {
   RestartGame();
 }
 
@@ -79,7 +79,7 @@ void Field::Draw() const {
           ci::gl::draw(mine_reg_, pixel_bounding_box);
         } else {  // otherwise draw the number (except zero)
           ci::gl::color(ci::Color("white"));
-          switch(b.GetValue()) {
+          switch (b.GetValue()) {
             case 0:
               ci::gl::draw(zero_, pixel_bounding_box);
               break;
@@ -123,26 +123,31 @@ void Field::Draw() const {
 
   // Restart game button
   ci::gl::color(ci::Color("white"));
-  if(!game_over_){
+  if (!game_over_) {
     ci::gl::draw(restart_button_reg_, restart_button_.bounding_box_);
-  }
-  else {
-    if(!win_){
+  } else {
+    if (!win_) {
       ci::gl::draw(restart_button_l_, restart_button_.bounding_box_);
-    }
-    else{
+    } else {
       ci::gl::draw(restart_button_w_, restart_button_.bounding_box_);
     }
   }
 
   // Timer
-  ci::gl::drawString(std::to_string((int) cinder_timer_.getSeconds()),
-                     timer_.top_left_, timer_.color_);
+  ci::gl::color(ci::Color("black"));
+  ci::gl::drawSolidRect(timer_.bounding_box_);
+  ci::gl::drawStringCentered(
+      std::to_string((int)cinder_timer_.getSeconds()),
+      timer_.top_left_ + vec2(pixel_side_length_, pixel_side_length_ / 5),
+      timer_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));
 
   // Number of unflagged mines left
-  ci::gl::drawString(std::to_string(num_mines_ - num_flagged_),
-                     mines_left_.top_left_, mines_left_.color_);
-
+  ci::gl::drawSolidRect(mines_left_.bounding_box_);
+  ci::gl::drawStringCentered(
+      std::to_string(num_mines_ - num_flagged_),
+      mines_left_.top_left_ +
+          vec2(pixel_side_length_, pixel_side_length_ / 5),
+      mines_left_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));
 }
 
 vec2 Field::BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords) {
