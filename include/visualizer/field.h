@@ -16,10 +16,6 @@ namespace visualizer {
 enum class Mode { kBeginner = 0, kIntermediate = 1, kExpert = 2};
 
 struct Container {
-  Container(glm::vec2 top_left, glm::vec2 bottom_right, ci::Color color)
-      : top_left_(top_left), bottom_right_(bottom_right), color_(color) {
-    bounding_box_ = ci::Rectf(top_left, bottom_right);
-  }
   Container(glm::vec2 top_left, double width, double height, ci::Color color)
       : top_left_(top_left), color_(color) {
     bottom_right_ = top_left + glm::vec2(width, height);
