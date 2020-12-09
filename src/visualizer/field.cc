@@ -12,42 +12,17 @@ namespace visualizer {
 
 using glm::vec2;
 
-Field::Field(const glm::vec2& top_left_corner, size_t num_rows, size_t num_cols,
-             double width, size_t num_mines)
-    : top_left_corner_(top_left_corner),
-      num_rows_(num_rows),
-      num_cols_(num_cols),
-      num_mines_(num_mines),
-      pixel_side_length_(width / num_cols),
-      restart_button_(
-          top_left_corner_ +
-              vec2((num_cols / 2 - 0.5) * pixel_side_length_, -45),
-          top_left_corner_ +
-              vec2((num_cols / 2 - 0.5) * pixel_side_length_, -45) +
-              vec2(1.5 * pixel_side_length_, 1.5 * pixel_side_length_),
-          ci::Color("blue")),
-      timer_(top_left_corner_ + vec2((num_cols - 3) * pixel_side_length_, -40),
-             top_left_corner_ + vec2((num_cols - 3) * pixel_side_length_, -40) +
-                 vec2(2 * pixel_side_length_, pixel_side_length_),
-             ci::Color("red")),
-      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -40),
-                  top_left_corner_ + vec2(pixel_side_length_, -40) +
-                      vec2(2 * pixel_side_length_, pixel_side_length_),
-                  ci::Color("red")) {
-  RestartGame();
-}
-
 Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
     : num_rows_(num_rows),
       num_cols_(num_cols),
-      pixel_side_length_(width / num_cols),
-      restart_button_(glm::vec2(0, 0), glm::vec2(0, 0), ci::Color("blue")),
-      timer_(glm::vec2(0, 0), glm::vec2(0, 0), ci::Color("black")),
-      mines_left_(top_left_corner_ + vec2(pixel_side_length_, -30),
-                  top_left_corner_ + vec2(pixel_side_length_, -30) +
-                      vec2(pixel_side_length_, pixel_side_length_),
-                  ci::Color("black")) {
-  RestartGame();
+      pixel_side_length_(width / num_cols){
+  RestartGame(Mode::kExpert);
+}
+
+Field::Field(const glm::vec2& top_left_corner, Mode mode, double width) :
+    top_left_corner_(top_left_corner){
+  RestartGame(mode);
+  pixel_side_length_ = width / num_cols_;
 }
 
 const bool Field::IsGameOver() const {
@@ -62,7 +37,7 @@ const std::vector<std::vector<Box>> Field::GetBoard() const {
   return board_;
 }
 
-void Field::Draw() const {
+void Field::Draw() {
   for (size_t row = 0; row < num_rows_; ++row) {
     for (size_t col = 0; col < num_cols_; ++col) {
       Box b = board_[row][col];
@@ -73,11 +48,21 @@ void Field::Draw() const {
           pixel_top_left + vec2(pixel_side_length_, pixel_side_length_);
       ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
       if (b.IsOpen()) {
-        // if the box is open
         if (b.IsMine()) {  // if the box is a mine
+          if (b.IsFlagged()){ // if the box is flagged correctly, keep it a flag
+            ci::gl::color(ci::Color("white"));
+            ci::gl::draw(flag_image_, pixel_bounding_box);
+          }
+          else {
+            ci::gl::color(ci::Color("white"));
+            ci::gl::draw(mine_reg_, pixel_bounding_box);
+          }
+        }
+        else if (b.IsFlagged()){ // if the box is flagged incorrectly
           ci::gl::color(ci::Color("white"));
-          ci::gl::draw(mine_reg_, pixel_bounding_box);
-        } else {  // otherwise draw the number (except zero)
+          ci::gl::draw(mine_x_, pixel_bounding_box);
+        }
+        else {  // otherwise draw the number (except zero)
           ci::gl::color(ci::Color("white"));
           switch (b.GetValue()) {
             case 0:
@@ -121,6 +106,7 @@ void Field::Draw() const {
     }
   }
 
+  /*
   // Restart game button
   ci::gl::color(ci::Color("white"));
   if (!game_over_) {
@@ -136,6 +122,9 @@ void Field::Draw() const {
   // Timer
   ci::gl::color(ci::Color("black"));
   ci::gl::drawSolidRect(timer_.bounding_box_);
+  if(!cinder_timer_.isStopped() && cinder_timer_.getSeconds() >= 999){
+    cinder_timer_.stop();
+  }
   ci::gl::drawStringCentered(
       std::to_string((int)cinder_timer_.getSeconds()),
       timer_.top_left_ + vec2(pixel_side_length_, pixel_side_length_ / 5),
@@ -147,7 +136,7 @@ void Field::Draw() const {
       std::to_string(num_mines_ - num_flagged_),
       mines_left_.top_left_ +
           vec2(pixel_side_length_, pixel_side_length_ / 5),
-      mines_left_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));
+      mines_left_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));*/
 }
 
 vec2 Field::BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords) {
@@ -207,18 +196,14 @@ void Field::OpenBox(size_t i, size_t j) {
   Box& current_box = board_[i][j];
   if (!current_box.IsOpen() && !current_box.IsFlagged()) {
     if (current_box.OpenAndCheckGameOver()) {
+      // game is over from opening a mine
       game_over_ = true;
       cinder_timer_.stop();
+      // TODO: current box is set to mine with an 'x'
+
       // display after the game ends and a mine is opened
-      restart_button_.color_ = ci::Color("red");
       for (std::vector<Box>& row : board_) {
         for (Box& b : row) {
-          if (b.IsFlagged() && !b.IsMine()) {
-            // TODO: if flagged incorrectly, set to bomb with an "x" over it
-            // also need to add this to the draw method
-          } else if (b.IsMine() && b.IsOpen()) {
-            // TODO: if bomb is opened, set to bomb with a red background
-          }
           b.OpenAndCheckGameOver();
         }
       }
@@ -227,7 +212,6 @@ void Field::OpenBox(size_t i, size_t j) {
       if (num_correct_unopened_ == 0) {
         game_over_ = true;
         win_ = true;
-        restart_button_.color_ = ci::Color("green");
         cinder_timer_.stop();
       }
     }
@@ -289,27 +273,29 @@ void Field::SetBoxAsMine(size_t i, size_t j) {
   board_[i][j].SetMine();
 }
 
-void Field::RestartGame() {
+
+void Field::RestartGame(Mode mode) {
+  if (mode == Mode::kExpert) {
+    num_rows_ = kNumRowsEx;
+    num_cols_ = kNumColsEx;
+    num_mines_ = kNumMinesEx;
+  } else if (mode == Mode::kIntermediate) {
+    num_rows_ = kNumRowsIm;
+    num_cols_ = kNumColsIm;
+    num_mines_ = kNumMinesIm;
+  }
+  else{
+    num_rows_ = kNumRowsBg;
+    num_cols_ = kNumColsBg;
+    num_mines_ = kNumMinesBg;
+  }
   board_.assign(num_rows_, std::vector<Box>(num_cols_, Box()));
   num_correct_unopened_ = num_rows_ * num_cols_ - num_mines_;
   num_flagged_ = 0;
   game_over_ = false;
   win_ = false;
-  restart_button_.color_ = ci::Color("blue");
   SetBoxesAround();
   cinder_timer_ = ci::Timer();
-}
-
-const bool Field::IsRestartButtonHit(
-    const glm::vec2& mouse_screen_coords) const {
-  return ((mouse_screen_coords.x > restart_button_.top_left_.x &&
-           mouse_screen_coords.x < restart_button_.bottom_right_.x) &&
-          (mouse_screen_coords.y > restart_button_.top_left_.y &&
-           mouse_screen_coords.y < restart_button_.bottom_right_.y));
-}
-
-Field::Container Field::GetRestartButton() {
-  return restart_button_;
 }
 
 }  // namespace visualizer

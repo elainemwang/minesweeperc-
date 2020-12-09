@@ -16,21 +16,56 @@ class MinesweeperApp : public ci::app::App {
  public:
   MinesweeperApp();
 
+  const size_t kXWindowSizeEx = 750;
+  const size_t kYWindowSizeEx = 400;
+
+  const size_t kXWindowSizeIm = 400;
+  const size_t kYWindowSizeIm = 400;
+
+  const size_t kXWindowSizeBg = 225;
+  const size_t kYWindowSizeBg = 225;
+
+  const double kPixelsPerBox = 25;
+
   void draw() override;
   void mouseDown(ci::app::MouseEvent event) override;
   void keyDown(ci::app::KeyEvent event) override;
   void mouseMove(ci::app::MouseEvent event) override;
 
-  const double kXWindowSize = 700;
-  const double kYWindowSize = 500;
-  const double kTopBorder = 50;
-  const size_t kNumCols = 28;
-  const size_t kNumRows = 20;
+  const double kYBorder_ = 2*kPixelsPerBox;
+
 
  private:
   Field field_;
   glm::vec2 mouse_pos_;
   bool game_start_ = false;
+
+  Container restart_button_;
+  Container timer_;
+  Container mines_left_;
+
+  Container bg_button_;
+  Container im_button_;
+  Container ex_button_;
+
+  Mode mode_;
+
+  ci::gl::Texture2dRef restart_button_reg_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_reg.png")));
+  ci::gl::Texture2dRef restart_button_l_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_l.png")));
+  ci::gl::Texture2dRef restart_button_w_ = ci::gl::Texture2d::create
+      (ci::Surface(ci::loadImage("assets/restart_w.png")));
+
+  /**
+   * Given the mouse's coordinates and a button, it returns a
+   * boolean representing whether or not the button is touched by the mouse.
+   * @param mouse_screen_coords The mouse's screen coordinates
+   * @param button The button to check
+   * @return Whether or not the button is touched by the mouse.
+   */
+  const bool IsButtonHit(const glm::vec2& mouse_screen_coords, Container button) const;
+
 };
 }
 }
