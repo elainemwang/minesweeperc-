@@ -10,6 +10,7 @@ Box::Box() {
   flagged_ = false;
   open_ = false;
   mine_ = false;
+  wrong_opened_ = false;
 }
 const size_t Box::GetValue() const {
   return value_;
@@ -35,7 +36,12 @@ void Box::Flag() {
 void Box::Unflag() {
   flagged_ = false;
 }
-
+void Box::SetWrongOpened() {
+  wrong_opened_ = true;
+}
+const bool Box::IsWrongOpened() {
+  return wrong_opened_;
+}
 const std::vector<std::vector<size_t>>& Box::GetBoxesAround() const{
   return boxes_around_;
 }

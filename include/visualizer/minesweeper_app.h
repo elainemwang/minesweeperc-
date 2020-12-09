@@ -66,6 +66,10 @@ class MinesweeperApp : public ci::app::App {
    */
   const bool IsButtonHit(const glm::vec2& mouse_screen_coords, Container button) const;
 
+  void SetContainerPositions(size_t x_window_size, size_t y_window_size);
+
+  size_t YWindowSizeFromMode(Mode mode);
+
 };
 }
 }

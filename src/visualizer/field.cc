@@ -49,7 +49,11 @@ void Field::Draw() {
       ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
       if (b.IsOpen()) {
         if (b.IsMine()) {  // if the box is a mine
-          if (b.IsFlagged()){ // if the box is flagged correctly, keep it a flag
+          if(b.IsWrongOpened()){
+            ci::gl::color(ci::Color("white"));
+            ci::gl::draw(mine_red_, pixel_bounding_box);
+          }
+          else if (b.IsFlagged()){ // if the box is flagged correctly, keep it a flag
             ci::gl::color(ci::Color("white"));
             ci::gl::draw(flag_image_, pixel_bounding_box);
           }
@@ -105,38 +109,6 @@ void Field::Draw() {
       ci::gl::drawStrokedRect(pixel_bounding_box);
     }
   }
-
-  /*
-  // Restart game button
-  ci::gl::color(ci::Color("white"));
-  if (!game_over_) {
-    ci::gl::draw(restart_button_reg_, restart_button_.bounding_box_);
-  } else {
-    if (!win_) {
-      ci::gl::draw(restart_button_l_, restart_button_.bounding_box_);
-    } else {
-      ci::gl::draw(restart_button_w_, restart_button_.bounding_box_);
-    }
-  }
-
-  // Timer
-  ci::gl::color(ci::Color("black"));
-  ci::gl::drawSolidRect(timer_.bounding_box_);
-  if(!cinder_timer_.isStopped() && cinder_timer_.getSeconds() >= 999){
-    cinder_timer_.stop();
-  }
-  ci::gl::drawStringCentered(
-      std::to_string((int)cinder_timer_.getSeconds()),
-      timer_.top_left_ + vec2(pixel_side_length_, pixel_side_length_ / 5),
-      timer_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));
-
-  // Number of unflagged mines left
-  ci::gl::drawSolidRect(mines_left_.bounding_box_);
-  ci::gl::drawStringCentered(
-      std::to_string(num_mines_ - num_flagged_),
-      mines_left_.top_left_ +
-          vec2(pixel_side_length_, pixel_side_length_ / 5),
-      mines_left_.color_, ci::Font("Helvetica Neue", pixel_side_length_ - 5));*/
 }
 
 vec2 Field::BoxRowColFromMousePos(const glm::vec2& mouse_screen_coords) {
@@ -199,8 +171,7 @@ void Field::OpenBox(size_t i, size_t j) {
       // game is over from opening a mine
       game_over_ = true;
       cinder_timer_.stop();
-      // TODO: current box is set to mine with an 'x'
-
+      current_box.SetWrongOpened();
       // display after the game ends and a mine is opened
       for (std::vector<Box>& row : board_) {
         for (Box& b : row) {

@@ -13,50 +13,31 @@ MinesweeperApp::MinesweeperApp()
       restart_button_(
           glm::vec2(0, kYBorder_) +
               glm::vec2((kXWindowSizeEx / 2 - 0.75 * kPixelsPerBox), -45),
-          glm::vec2(0, kYBorder_) +
-              glm::vec2((kXWindowSizeEx / 2 - 0.75 * kPixelsPerBox), -45) +
-              glm::vec2(1.5 * kPixelsPerBox, 1.5 * kPixelsPerBox),
-          ci::Color("white")),
+          1.5 * kPixelsPerBox, 1.5 * kPixelsPerBox, ci::Color("white")),
       timer_(glm::vec2(0, kYBorder_) +
                  glm::vec2(kXWindowSizeEx - 3 * kPixelsPerBox, -40),
-             glm::vec2(0, kYBorder_) +
-                 glm::vec2(kXWindowSizeEx - 3 * kPixelsPerBox, -40) +
-                 glm::vec2(2 * kPixelsPerBox, kPixelsPerBox),
-             ci::Color("red")),
+             2 * kPixelsPerBox, kPixelsPerBox, ci::Color("red")),
       mines_left_(glm::vec2(0, kYBorder_) + glm::vec2(kPixelsPerBox, -40),
-                  glm::vec2(0, kYBorder_) + glm::vec2(kPixelsPerBox, -40) +
-                      glm::vec2(2 * kPixelsPerBox, kPixelsPerBox),
-                  ci::Color("red")),
+                  2 * kPixelsPerBox, kPixelsPerBox, ci::Color("red")),
       bg_button_(
           glm::vec2(0, kYBorder_) +
               glm::vec2((kXWindowSizeEx / 4 - kPixelsPerBox),
                         kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox),
-          glm::vec2(0, kYBorder_) +
-              glm::vec2((kXWindowSizeEx / 4 - kPixelsPerBox),
-                        kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox) +
-              glm::vec2(2 * kPixelsPerBox, kPixelsPerBox),
-          ci::Color("white")),
+          2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white")),
       im_button_(
           glm::vec2(0, kYBorder_) +
               glm::vec2((kXWindowSizeEx / 2 - kPixelsPerBox),
                         kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox),
-          glm::vec2(0, kYBorder_) +
-              glm::vec2((kXWindowSizeEx / 2 - kPixelsPerBox),
-                        kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox) +
-              glm::vec2(2 * kPixelsPerBox, kPixelsPerBox),
-          ci::Color("white")),
+          2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white")),
       ex_button_(
           glm::vec2(0, kYBorder_) +
               glm::vec2((3 * kXWindowSizeEx / 4 - kPixelsPerBox),
                         kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox),
-          glm::vec2(0, kYBorder_) +
-              glm::vec2((3 * kXWindowSizeEx / 4 - kPixelsPerBox),
-                        kYWindowSizeEx + 2 * kYBorder_ - 60 - kPixelsPerBox) +
-              glm::vec2(2 * kPixelsPerBox, kPixelsPerBox),
-          ci::Color("white")),
+          2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white")),
       mode_(Mode::kExpert) {
   ci::app::setWindowSize((int)kXWindowSizeEx,
                          (int)kYWindowSizeEx + 2 * kYBorder_);
+  SetContainerPositions(kXWindowSizeEx, kYWindowSizeEx);
 }
 void MinesweeperApp::draw() {
   ci::Color8u background_color(190, 190, 190);
@@ -113,7 +94,7 @@ void MinesweeperApp::draw() {
 void MinesweeperApp::mouseDown(ci::app::MouseEvent event) {
   if (!field_.IsGameOver()) {
     if (event.getPos().y > kYBorder_ &&
-        event.getPos().y < kYWindowSizeEx + kYBorder_) {
+        event.getPos().y < YWindowSizeFromMode(mode_) + kYBorder_) {
       glm::vec2 field_pos = field_.BoxRowColFromMousePos(event.getPos());
       if (!game_start_) {
         game_start_ = true;
@@ -127,22 +108,25 @@ void MinesweeperApp::mouseDown(ci::app::MouseEvent event) {
     game_start_ = false;
   } else if (IsButtonHit(event.getPos(), ex_button_)) {
     mode_ = Mode::kExpert;
-    field_.RestartGame(Mode::kExpert);
-    game_start_ = false;
     ci::app::setWindowSize((int)kXWindowSizeEx,
                            (int)kYWindowSizeEx + 2 * kYBorder_);
+    field_.RestartGame(Mode::kExpert);
+    game_start_ = false;
+    SetContainerPositions(kXWindowSizeEx, kYWindowSizeEx);
   } else if (IsButtonHit(event.getPos(), im_button_)) {
     mode_ = Mode::kIntermediate;
-    field_.RestartGame(Mode::kIntermediate);
-    game_start_ = false;
     ci::app::setWindowSize((int)kXWindowSizeIm,
                            (int)kYWindowSizeIm + 2 * kYBorder_);
+    field_.RestartGame(Mode::kIntermediate);
+    game_start_ = false;
+    SetContainerPositions(kXWindowSizeIm, kYWindowSizeIm);
   } else if (IsButtonHit(event.getPos(), bg_button_)) {
     mode_ = Mode::kBeginner;
-    field_.RestartGame(Mode::kBeginner);
-    game_start_ = false;
     ci::app::setWindowSize((int)kXWindowSizeBg,
                            (int)kYWindowSizeBg + 2 * kYBorder_);
+    field_.RestartGame(Mode::kBeginner);
+    game_start_ = false;
+    SetContainerPositions(kXWindowSizeBg, kYWindowSizeBg);
   }
 }
 
@@ -154,7 +138,7 @@ void MinesweeperApp::mouseMove(ci::app::MouseEvent event) {
 
 void MinesweeperApp::keyDown(ci::app::KeyEvent event) {
   if (!field_.IsGameOver()) {
-    if (mouse_pos_.y > kYBorder_) {
+    if (mouse_pos_.y > kYBorder_ && mouse_pos_.y < YWindowSizeFromMode(mode_)) {
       glm::vec2 field_pos = field_.BoxRowColFromMousePos(mouse_pos_);
       switch (event.getCode()) {
         case ci::app::KeyEvent::KEY_SPACE:
@@ -187,5 +171,43 @@ const bool MinesweeperApp::IsButtonHit(const glm::vec2& mouse_screen_coords,
            mouse_screen_coords.y < button.bottom_right_.y));
 }
 
+void MinesweeperApp::SetContainerPositions(size_t x_window_size,
+                                           size_t y_window_size) {
+  restart_button_ =
+      Container(glm::vec2(0, kYBorder_) +
+                    glm::vec2((x_window_size / 2 - 0.75 * kPixelsPerBox), -45),
+                1.5 * kPixelsPerBox, 1.5 * kPixelsPerBox, ci::Color("white"));
+  timer_ = Container(glm::vec2(0, kYBorder_) +
+                         glm::vec2(x_window_size - 3 * kPixelsPerBox, -40),
+                     2 * kPixelsPerBox, kPixelsPerBox, ci::Color("red"));
+  mines_left_ =
+      Container(glm::vec2(0, kYBorder_) + glm::vec2(kPixelsPerBox, -40),
+                2 * kPixelsPerBox, kPixelsPerBox, ci::Color("red"));
+  bg_button_ = Container(
+      glm::vec2(0, kYBorder_) +
+          glm::vec2((x_window_size / 4 - kPixelsPerBox),
+                    y_window_size + 2 * kYBorder_ - 60 - kPixelsPerBox),
+      2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white"));
+  im_button_ = Container(
+      glm::vec2(0, kYBorder_) +
+          glm::vec2((x_window_size / 2 - kPixelsPerBox),
+                    y_window_size + 2 * kYBorder_ - 60 - kPixelsPerBox),
+      2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white"));
+  ex_button_ = Container(
+      glm::vec2(0, kYBorder_) +
+          glm::vec2((3 * x_window_size / 4 - kPixelsPerBox),
+                    y_window_size + 2 * kYBorder_ - 60 - kPixelsPerBox),
+      2 * kPixelsPerBox, kPixelsPerBox, ci::Color("white"));
+}
+
+size_t MinesweeperApp::YWindowSizeFromMode(Mode mode) {
+  if (mode == Mode::kBeginner) {
+    return kYWindowSizeBg;
+  } else if (mode == Mode::kIntermediate) {
+    return kYWindowSizeIm;
+  } else {
+    return kYWindowSizeEx;
+  }
+}
 }  // namespace visualizer
 }  // namespace minesweeper
