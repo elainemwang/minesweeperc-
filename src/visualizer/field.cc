@@ -69,9 +69,6 @@ void Field::Draw() {
             ci::gl::color(ci::Color("white"));
             ci::gl::draw(mine_reg_, pixel_bounding_box);
           }
-        } else if (b.IsFlagged()) {  // if the box is flagged incorrectly
-          ci::gl::color(ci::Color("white"));
-          ci::gl::draw(mine_x_, pixel_bounding_box);
         } else {  // otherwise draw the number (except zero)
           ci::gl::color(ci::Color("white"));
           switch (b.GetValue()) {
@@ -105,8 +102,14 @@ void Field::Draw() {
           }
         }
       } else if (b.IsFlagged()) {  // if the box is flagged
-        ci::gl::color(ci::Color("white"));
-        ci::gl::draw(flag_image_, pixel_bounding_box);
+        if(!b.IsMine() && game_over_ && !win_){
+          ci::gl::color(ci::Color("white"));
+          ci::gl::draw(mine_x_, pixel_bounding_box);
+        }
+        else {
+          ci::gl::color(ci::Color("white"));
+          ci::gl::draw(flag_image_, pixel_bounding_box);
+        }
       } else {  // if the box is closed
         ci::gl::color(ci::Color("white"));
         ci::gl::draw(closed_box_image_, pixel_bounding_box);
@@ -181,7 +184,9 @@ void Field::OpenBox(size_t i, size_t j) {
       // display after the game ends and a mine is opened
       for (std::vector<Box>& row : board_) {
         for (Box& b : row) {
-          b.OpenAndCheckGameOver();
+          if(b.IsMine()){
+            b.OpenAndCheckGameOver();
+          }
         }
       }
     } else {
