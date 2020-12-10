@@ -15,12 +15,21 @@ using glm::vec2;
 Field::Field(size_t num_rows, size_t num_cols, double width, size_t num_mines)
     : num_rows_(num_rows),
       num_cols_(num_cols),
-      pixel_side_length_(width / num_cols){
-  RestartGame(Mode::kExpert);
+      pixel_side_length_(width / num_cols) {
+  num_rows_ = num_rows;
+  num_cols_ = num_cols;
+  num_mines_ = num_mines;
+  board_.assign(num_rows_, std::vector<Box>(num_cols_, Box()));
+  num_correct_unopened_ = num_rows_ * num_cols_ - num_mines_;
+  num_flagged_ = 0;
+  game_over_ = false;
+  win_ = false;
+  SetBoxesAround();
+  cinder_timer_ = ci::Timer();
 }
 
-Field::Field(const glm::vec2& top_left_corner, Mode mode, double width) :
-    top_left_corner_(top_left_corner){
+Field::Field(const glm::vec2& top_left_corner, Mode mode, double width)
+    : top_left_corner_(top_left_corner) {
   RestartGame(mode);
   pixel_side_length_ = width / num_cols_;
 }
@@ -49,24 +58,21 @@ void Field::Draw() {
       ci::Rectf pixel_bounding_box(pixel_top_left, pixel_bottom_right);
       if (b.IsOpen()) {
         if (b.IsMine()) {  // if the box is a mine
-          if(b.IsWrongOpened()){
+          if (b.IsWrongOpened()) {
             ci::gl::color(ci::Color("white"));
             ci::gl::draw(mine_red_, pixel_bounding_box);
-          }
-          else if (b.IsFlagged()){ // if the box is flagged correctly, keep it a flag
+          } else if (b.IsFlagged()) {  // if the box is flagged correctly, keep
+                                       // it a flag
             ci::gl::color(ci::Color("white"));
             ci::gl::draw(flag_image_, pixel_bounding_box);
-          }
-          else {
+          } else {
             ci::gl::color(ci::Color("white"));
             ci::gl::draw(mine_reg_, pixel_bounding_box);
           }
-        }
-        else if (b.IsFlagged()){ // if the box is flagged incorrectly
+        } else if (b.IsFlagged()) {  // if the box is flagged incorrectly
           ci::gl::color(ci::Color("white"));
           ci::gl::draw(mine_x_, pixel_bounding_box);
-        }
-        else {  // otherwise draw the number (except zero)
+        } else {  // otherwise draw the number (except zero)
           ci::gl::color(ci::Color("white"));
           switch (b.GetValue()) {
             case 0:
@@ -221,8 +227,10 @@ void Field::SetBoxesAround() {
 }
 
 void Field::FlagBox(size_t i, size_t j) {
-  board_[i][j].Flag();
-  ++num_flagged_;
+  if (num_flagged_ < num_mines_) {
+    board_[i][j].Flag();
+    ++num_flagged_;
+  }
 }
 
 void Field::UnflagBox(size_t i, size_t j) {
@@ -244,7 +252,6 @@ void Field::SetBoxAsMine(size_t i, size_t j) {
   board_[i][j].SetMine();
 }
 
-
 void Field::RestartGame(Mode mode) {
   if (mode == Mode::kExpert) {
     num_rows_ = kNumRowsEx;
@@ -254,8 +261,7 @@ void Field::RestartGame(Mode mode) {
     num_rows_ = kNumRowsIm;
     num_cols_ = kNumColsIm;
     num_mines_ = kNumMinesIm;
-  }
-  else{
+  } else {
     num_rows_ = kNumRowsBg;
     num_cols_ = kNumColsBg;
     num_mines_ = kNumMinesBg;

@@ -3,20 +3,21 @@
 //
 #pragma once
 
+#include "cinder/ImageIo.h"
+#include "cinder/Timer.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/gl/gl.h"
 #include "core/box.h"
-#include "cinder/Timer.h"
-#include "cinder/ImageIo.h"
-#include "cinder/gl/Texture.h"
 
 namespace minesweeper {
 
 namespace visualizer {
 
-enum class Mode { kBeginner = 0, kIntermediate = 1, kExpert = 2};
+enum class Mode { kBeginner = 0, kIntermediate = 1, kExpert = 2 };
 
 struct Container {
-  Container(glm::vec2 top_left, double width, double height, ci::Color color)
+  Container(const glm::vec2& top_left, double width, double height,
+            const ci::Color& color)
       : top_left_(top_left), color_(color) {
     bottom_right_ = top_left + glm::vec2(width, height);
     bounding_box_ = ci::Rectf(top_left, bottom_right_);
@@ -29,7 +30,9 @@ struct Container {
 
 class Field {
  public:
+  // testing constructor
   Field(size_t num_rows, size_t num_cols, double width, size_t num_mines);
+  // game constructor
   Field(const glm::vec2& top_left_corner, Mode mode, double width);
   void Draw();
   const std::vector<std::vector<Box>> GetBoard() const;
@@ -123,37 +126,6 @@ class Field {
   bool game_over_;
   bool win_;
 
-  //Textures
-  ci::gl::Texture2dRef closed_box_image_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/closed_box.png")));
-  ci::gl::Texture2dRef flag_image_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/flag.png")));
-  ci::gl::Texture2dRef mine_reg_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/mine_reg.png")));
-  ci::gl::Texture2dRef mine_red_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/mine_red.png")));
-  ci::gl::Texture2dRef mine_x_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/mine_x.png")));
-
-  //Numbers
-  ci::gl::Texture2dRef zero_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/0.png")));
-  ci::gl::Texture2dRef one_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/1.png")));
-  ci::gl::Texture2dRef two_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/2.png")));
-  ci::gl::Texture2dRef three_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/3.png")));
-  ci::gl::Texture2dRef four_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/4.png")));
-  ci::gl::Texture2dRef five_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/5.png")));
-  ci::gl::Texture2dRef six_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/6.png")));
-  ci::gl::Texture2dRef seven_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/7.png")));
-  ci::gl::Texture2dRef eight_ = ci::gl::Texture2d::create
-      (ci::Surface(ci::loadImage("assets/8.png")));
 
   /**
    * Set all the mines in the field.
@@ -161,6 +133,38 @@ class Field {
    * @param j The col position of the starting box.
    */
   void SetMines(size_t i, size_t j);
+
+  // Textures
+  ci::gl::Texture2dRef closed_box_image_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/closed_box.png")));
+  ci::gl::Texture2dRef flag_image_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/flag.png")));
+  ci::gl::Texture2dRef mine_reg_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/mine_reg.png")));
+  ci::gl::Texture2dRef mine_red_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/mine_red.png")));
+  ci::gl::Texture2dRef mine_x_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/mine_x.png")));
+
+  // Numbers
+  ci::gl::Texture2dRef zero_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/0.png")));
+  ci::gl::Texture2dRef one_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/1.png")));
+  ci::gl::Texture2dRef two_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/2.png")));
+  ci::gl::Texture2dRef three_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/3.png")));
+  ci::gl::Texture2dRef four_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/4.png")));
+  ci::gl::Texture2dRef five_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/5.png")));
+  ci::gl::Texture2dRef six_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/6.png")));
+  ci::gl::Texture2dRef seven_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/7.png")));
+  ci::gl::Texture2dRef eight_ = ci::gl::Texture2d::create(
+      ci::Surface(ci::loadImage("assets/images/8.png")));
 };
 
 }  // namespace visualizer
